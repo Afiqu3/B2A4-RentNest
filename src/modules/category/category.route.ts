@@ -8,7 +8,7 @@ const router = Router();
 router.post("/", auth(Role.ADMIN), categoryController.createCategory);
 router.get(
   "/",
-  auth(Role.ADMIN, Role.LANDLORD),
+  auth(Role.ADMIN, Role.LANDLORD, Role.TENANT),
   categoryController.getAllCategory,
 );
 router.put("/:categoryId", auth(Role.ADMIN), categoryController.updateCategory);

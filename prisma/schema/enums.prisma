@@ -8,3 +8,9 @@ enum Role {
   LANDLORD
   ADMIN
 }
+
+enum PropertyStatus {
+  AVAILABLE
+  RENTED
+  UNAVAILABLE
+}

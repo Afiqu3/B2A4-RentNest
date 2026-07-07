@@ -8,6 +8,7 @@ model User {
     role         Role         @default(TENANT)
     createdAt    DateTime     @default(now())
     updatedAt    DateTime     @updatedAt
+    properties   Property[]
 
     @@map("users")
 }
