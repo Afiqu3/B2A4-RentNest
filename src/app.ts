@@ -5,6 +5,7 @@ import config from "./config";
 import { notFound } from "./middlewares/notFound";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import { authRouter } from "./modules/auth/auth.route";
+import { categoryRouter } from "./modules/category/category.route";
 
 const app: Application = express();
 
@@ -22,7 +23,9 @@ app.use(cookieParser());
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, World!");
 });
+
 app.use("/api/auth", authRouter);
+app.use("/api/categories", categoryRouter);
 
 app.use(notFound);
 
