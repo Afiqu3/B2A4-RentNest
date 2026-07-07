@@ -8,7 +8,7 @@ import {
 import config from "../../config";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
-import { Role } from "../../../generated/prisma/enums";
+import { ActiveStatus, Role } from "../../../generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: IRegisterUserPayload) => {
   const { name, email, password, phone, role } = payload;
@@ -178,6 +178,22 @@ const getAllUserFromDB = async () => {
   return result;
 };
 
+const updateUsersActiveStatusIntoDB = async (
+  userId: string,
+  activeStatus: ActiveStatus,
+) => {
+  const updatedUserStatus = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      activeStatus,
+    },
+  });
+
+  return updatedUserStatus;
+};
+
 export const authService = {
   registerUserIntoDB,
   loginUserIntoDB,
@@ -185,4 +201,5 @@ export const authService = {
   getMyProfileFromDB,
   updateProfileIntoDB,
   getAllUserFromDB,
+  updateUsersActiveStatusIntoDB,
 };

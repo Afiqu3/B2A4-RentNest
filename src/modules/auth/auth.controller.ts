@@ -123,6 +123,26 @@ const getAllUser = catchAsync(
   },
 );
 
+const updateUsersActiveStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId as string;
+
+    const payload = req.body;
+
+    const updatedUser = await authService.updateUsersActiveStatusIntoDB(
+      userId,
+      payload.activeStatus,
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User status updated successfully",
+      data: updatedUser,
+    });
+  },
+);
+
 export const authController = {
   registerUser,
   loginUser,
@@ -130,4 +150,5 @@ export const authController = {
   getMyProfile,
   updateProfile,
   getAllUser,
+  updateUsersActiveStatus,
 };

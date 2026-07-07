@@ -19,5 +19,10 @@ router.patch(
   authController.updateProfile,
 );
 router.get("/users", auth(Role.ADMIN), authController.getAllUser);
+router.put(
+  "/users/:userId",
+  auth(Role.ADMIN),
+  authController.updateUsersActiveStatus,
+);
 
 export const authRouter = router;
