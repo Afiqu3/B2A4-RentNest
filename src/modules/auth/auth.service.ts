@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
-import { ILoginUser, IRegisterUserPayload } from "./auth.interface";
+import {
+  ILoginUser,
+  IRegisterUserPayload,
+  IUserUpdatedPayload,
+} from "./auth.interface";
 import config from "../../config";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
@@ -13,9 +17,9 @@ const registerUserIntoDB = async (payload: IRegisterUserPayload) => {
       email,
     },
   });
-    if (isUserExist) {
-      throw new Error("User with this email already exists");
-    }
+  if (isUserExist) {
+    throw new Error("User with this email already exists");
+  }
 
   const hashedPassword = await bcrypt.hash(
     password,
@@ -137,9 +141,31 @@ const getMyProfileFromDB = async (userId: string) => {
   return user;
 };
 
+const updateProfileIntoDB = async (
+  userId: string,
+  payload: IUserUpdatedPayload,
+) => {
+  const { name, phone } = payload;
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+
+    data: {
+      name,
+      phone,
+    },
+    omit: {
+      password: true,
+    },
+  });
+
+  return updatedUser;
+};
+
 export const authService = {
   registerUserIntoDB,
   loginUserIntoDB,
   refreshToken,
   getMyProfileFromDB,
+  updateProfileIntoDB
 };
