@@ -1,3 +1,3 @@
-export interface ICreateCategory {
+export interface ICategory {
   name: string;
 }

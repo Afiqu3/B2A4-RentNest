@@ -85,7 +85,7 @@ const getMyProfile = catchAsync(
       success: true,
       statusCode: httpStatus.OK,
       message: "User profile fetched successfully",
-      data: { profile },
+      data: profile ,
     });
   },
 );
@@ -105,7 +105,7 @@ const updateProfile = catchAsync(
       success: true,
       statusCode: httpStatus.OK,
       message: "User profile updated successfully",
-      data: { updatedProfile },
+      data: updatedProfile ,
     });
   },
 );
@@ -125,7 +125,7 @@ const getAllUser = catchAsync(
 
 const updateUsersActiveStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.userId as string;
+    const userId = req.params?.userId as string;
 
     const payload = req.body;
 

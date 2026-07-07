@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
-import { ICreateCategory } from "./category.interface";
+import { ICategory } from "./category.interface";
 
-const createCategoryIntoDB = async (payload: ICreateCategory) => {
+const createCategoryIntoDB = async (payload: ICategory) => {
   const result = await prisma.category.create({
     data: {
       ...payload,
@@ -17,7 +17,21 @@ const getAllCategoryFromDB = async () => {
   return result;
 };
 
+const updateCategoryIntoDB = async (categoryId: string, payload: ICategory) => {
+  const result = await prisma.category.update({
+    where: {
+      id: categoryId,
+    },
+    data: {
+      ...payload,
+    },
+  });
+
+  return result;
+};
+
 export const categoryService = {
   createCategoryIntoDB,
   getAllCategoryFromDB,
+  updateCategoryIntoDB,
 };
