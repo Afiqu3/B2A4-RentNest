@@ -18,5 +18,6 @@ router.patch(
   auth(Role.TENANT, Role.LANDLORD, Role.ADMIN),
   authController.updateProfile,
 );
+router.get("/users", auth(Role.ADMIN), authController.getAllUser);
 
 export const authRouter = router;

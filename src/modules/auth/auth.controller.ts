@@ -110,10 +110,24 @@ const updateProfile = catchAsync(
   },
 );
 
+const getAllUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await authService.getAllUserFromDB();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Users retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const authController = {
   registerUser,
   loginUser,
   refreshToken,
   getMyProfile,
   updateProfile,
+  getAllUser,
 };

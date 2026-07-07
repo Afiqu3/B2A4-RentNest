@@ -8,6 +8,7 @@ import {
 import config from "../../config";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
+import { Role } from "../../../generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: IRegisterUserPayload) => {
   const { name, email, password, phone, role } = payload;
@@ -162,10 +163,26 @@ const updateProfileIntoDB = async (
   return updatedUser;
 };
 
+const getAllUserFromDB = async () => {
+  const result = await prisma.user.findMany({
+    where: {
+      role: {
+        in: [Role.LANDLORD, Role.TENANT],
+      },
+    },
+    omit: {
+      password: true,
+    },
+  });
+
+  return result;
+};
+
 export const authService = {
   registerUserIntoDB,
   loginUserIntoDB,
   refreshToken,
   getMyProfileFromDB,
-  updateProfileIntoDB
+  updateProfileIntoDB,
+  getAllUserFromDB,
 };
