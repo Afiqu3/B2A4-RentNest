@@ -18,6 +18,12 @@ const getAllCategoryFromDB = async () => {
 };
 
 const updateCategoryIntoDB = async (categoryId: string, payload: ICategory) => {
+  const category = await prisma.category.findUniqueOrThrow({
+    where: {
+      id: categoryId,
+    },
+  });
+
   const result = await prisma.category.update({
     where: {
       id: categoryId,
@@ -30,8 +36,23 @@ const updateCategoryIntoDB = async (categoryId: string, payload: ICategory) => {
   return result;
 };
 
+const deleteCategoryFromDB = async (categoryId: string) => {
+  const category = await prisma.category.findUniqueOrThrow({
+    where: {
+      id: categoryId,
+    },
+  });
+  
+  await prisma.category.delete({
+    where: {
+      id: categoryId,
+    },
+  });
+};
+
 export const categoryService = {
   createCategoryIntoDB,
   getAllCategoryFromDB,
   updateCategoryIntoDB,
+  deleteCategoryFromDB,
 };
