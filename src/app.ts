@@ -7,6 +7,7 @@ import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import { authRouter } from "./modules/auth/auth.route";
 import { categoryRouter } from "./modules/category/category.route";
 import { propertyRouter } from "./modules/property/property.route";
+import { rentalRequestRouter } from "./modules/rentalRequest/rentalRequest.route";
 
 const app: Application = express();
 
@@ -28,6 +29,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", authRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/properties", propertyRouter);
+app.use("/api/rentals", rentalRequestRouter);
 
 app.use(notFound);
 
