@@ -14,3 +14,11 @@ enum PropertyStatus {
   RENTED
   UNAVAILABLE
 }
+
+enum RentalRequestStatus {
+  PENDING // Tenant submitted, waiting for landlord
+  APPROVED // Landlord approved, awaiting payment
+  REJECTED // Landlord rejected
+  ACTIVE // Payment completed, tenant moved in
+  COMPLETED // Rental period finished (tenant can now review)
+}
