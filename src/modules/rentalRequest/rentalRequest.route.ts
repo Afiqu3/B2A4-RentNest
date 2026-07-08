@@ -11,4 +11,10 @@ router.post(
   rentalRequestController.createRentalRequest,
 );
 
+router.patch(
+  "/:requestId/status",
+  auth(Role.LANDLORD),
+  rentalRequestController.updateRentalRequestStatus,
+);
+
 export const rentalRequestRouter = router;
