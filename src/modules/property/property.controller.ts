@@ -106,6 +106,19 @@ const getAllAvailableProperty = catchAsync(
   },
 );
 
+const getAllProperty = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await propertyService.getAllPropertyFromDB();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All properties retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const propertyController = {
   createProperty,
   updateProperty,
@@ -113,4 +126,5 @@ export const propertyController = {
   getPropertyById,
   getAllMyProperty,
   getAllAvailableProperty,
+  getAllProperty,
 };

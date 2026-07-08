@@ -218,6 +218,12 @@ const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {
   };
 };
 
+const getAllPropertyFromDB = async () => {
+  const result = await prisma.property.findMany();
+
+  return result;
+};
+
 export const propertyService = {
   createPropertyIntoDB,
   updatePropertyIntoDB,
@@ -225,4 +231,5 @@ export const propertyService = {
   getPropertyByIdFromDB,
   getAllMyPropertyFromDB,
   getAllAvailablePropertyFromDB,
+  getAllPropertyFromDB,
 };
