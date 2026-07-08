@@ -60,8 +60,40 @@ const deleteProperty = catchAsync(
   },
 );
 
+const getPropertyById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const propertyId = req.params?.propertyId as string;
+
+    const result = await propertyService.getPropertyByIdFromDB(propertyId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Property retrieved successfully",
+      data: result,
+    });
+  },
+);
+
+const getAllMyProperty = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const landlordId = req.user?.id as string;
+
+    const result = await propertyService.getAllMyPropertyFromDB(landlordId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All of your Property retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const propertyController = {
   createProperty,
   updateProperty,
   deleteProperty,
+  getPropertyById,
+  getAllMyProperty,
 };

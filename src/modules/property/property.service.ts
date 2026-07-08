@@ -63,8 +63,48 @@ const deletePropertyFromDB = async (propertyId: string, landlordId: string) => {
   });
 };
 
+const getPropertyByIdFromDB = async (propertyId: string) => {
+  const result = await prisma.property.findUniqueOrThrow({
+    where: {
+      id: propertyId,
+    },
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  if (result.status !== "AVAILABLE") {
+    throw new Error("Property is not Available!");
+  }
+
+  return result;
+};
+
+const getAllMyPropertyFromDB = async (landlordId: string) => {
+  const result = await prisma.property.findMany({
+    where: {
+      landlordId,
+    },
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
 export const propertyService = {
   createPropertyIntoDB,
   updatePropertyIntoDB,
   deletePropertyFromDB,
+  getPropertyByIdFromDB,
+  getAllMyPropertyFromDB,
 };
