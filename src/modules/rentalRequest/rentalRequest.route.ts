@@ -11,13 +11,18 @@ router.get(
   auth(Role.LANDLORD),
   rentalRequestController.getMyRenalRequest,
 );
+router.get(
+  "/my-request",
+  auth(Role.TENANT),
+  rentalRequestController.getMyRequest,
+);
 router.post(
   "/:propertyId",
   auth(Role.TENANT),
   rentalRequestController.createRentalRequest,
 );
 
-router.patch(
+router.put(
   "/:requestId/status",
   auth(Role.LANDLORD),
   rentalRequestController.updateRentalRequestStatus,

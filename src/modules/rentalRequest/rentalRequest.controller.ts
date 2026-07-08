@@ -60,7 +60,35 @@ const getAllRentalRequest = catchAsync(
 );
 
 const getMyRenalRequest = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {},
+  async (req: Request, res: Response, next: NextFunction) => {
+    const landlordId = req.user?.id as string;
+
+    const result =
+      await rentalRequestService.getMyRenalRequestFromDB(landlordId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "My rental request retrieved successfully",
+      data: result,
+    });
+  },
+);
+
+const getMyRequest = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const tenantId = req.user?.id as string;
+
+    const result =
+      await rentalRequestService.getMyRequestFromDB(tenantId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "My rental request retrieved successfully",
+      data: result,
+    });
+  },
 );
 
 export const rentalRequestController = {
@@ -68,4 +96,5 @@ export const rentalRequestController = {
   updateRentalRequestStatus,
   getAllRentalRequest,
   getMyRenalRequest,
+  getMyRequest,
 };

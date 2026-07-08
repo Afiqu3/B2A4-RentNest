@@ -64,10 +64,38 @@ const getAllRentalRequestFromDB = async () => {
 };
 
 const getMyRenalRequestFromDB = async (landlordId: string) => {
-    const result = await prisma.rentalRequest.findMany({
-        where: {       
-        }
-    });
+  const result = await prisma.rentalRequest.findMany({
+    where: {
+      property: {
+        landlordId,
+      },
+    },
+    include: {
+      property: true,
+      tenant: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
+const getMyRequestFromDB = async (tenantId: string) => {
+  const result = await prisma.rentalRequest.findMany({
+    where: {
+      tenantId,
+    },
+    include: {
+      property: true,
+    },
+  });
+
+  return result;
 };
 
 export const rentalRequestService = {
@@ -75,32 +103,5 @@ export const rentalRequestService = {
   updateRentalRequestStatusIntoDB,
   getAllRentalRequestFromDB,
   getMyRenalRequestFromDB,
+  getMyRequestFromDB,
 };
-
-
-// const getPropertyWithRequests = async (propertyId: string) => {
-//   const result = await prisma.property.findUnique({
-//     where: { id: propertyId },
-//     include: {
-//       rentalRequests: true,
-//     },
-//   });
-
-//   return result;
-// };
-
-// const getMyRentalRequests = async (tenantId: string) => {
-//   return prisma.rentalRequest.findMany({
-//     where: { tenantId },
-//     include: {
-//       property: {
-//         include: {
-//           landlord: {
-//             select: { id: true, name: true, email: true },
-//           },
-//         },
-//       },
-//     },
-//     orderBy: { createdAt: "desc" },
-//   });
-// };

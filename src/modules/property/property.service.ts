@@ -196,6 +196,8 @@ const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {
       landlord: {
         select: {
           name: true,
+          phone: true,
+          email: true,
         },
       },
     },
@@ -219,7 +221,21 @@ const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {
 };
 
 const getAllPropertyFromDB = async () => {
-  const result = await prisma.property.findMany();
+  const result = await prisma.property.findMany({
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      landlord: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
   return result;
 };
