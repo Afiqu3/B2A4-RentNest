@@ -22,3 +22,8 @@ enum RentalRequestStatus {
   ACTIVE // Payment completed, tenant moved in
   COMPLETED // Rental period finished (tenant can now review)
 }
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+}
