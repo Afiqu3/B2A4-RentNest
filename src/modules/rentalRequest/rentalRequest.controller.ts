@@ -10,7 +10,7 @@ const createRentalRequest = catchAsync(
     const tenantId = req.user?.id as string;
     const payload = req.body;
 
-    const result = await rentalRequestService.createRentalRequestFromDB(
+    const result = await rentalRequestService.createRentalRequestIntoDB(
       propertyId,
       tenantId,
       payload,

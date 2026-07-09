@@ -4,27 +4,38 @@ import {
   IRentalRequestUpdate,
 } from "./rentalRequest.interface";
 
-const createRentalRequestFromDB = async (
+const createRentalRequestIntoDB = async (
   propertyId: string,
   tenantId: string,
   payload: IRentalRequest,
 ) => {
-  const property = await prisma.property.findUniqueOrThrow({
-    where: {
-      id: propertyId,
-    },
+  const transactionResult = await prisma.$transaction(async (tx) => {
+    const property = await tx.property.findUniqueOrThrow({
+      where: {
+        id: propertyId,
+      },
+    });
+
+    const result = await tx.rentalRequest.create({
+      data: {
+        moveInDate: new Date(payload.moveInDate),
+        durationMonths: payload.durationMonths,
+        propertyId,
+        tenantId,
+      },
+    });
+
+    await tx.payment.create({
+      data: {
+        amount: property.rentAmount,
+        rentalRequestId: result.id,
+        tenantId: tenantId,
+      },
+    });
+    return result;
   });
 
-  const result = await prisma.rentalRequest.create({
-    data: {
-      moveInDate: new Date(payload.moveInDate),
-      durationMonths: payload.durationMonths,
-      propertyId,
-      tenantId,
-    },
-  });
-
-  return result;
+  return transactionResult;
 };
 
 const updateRentalRequestStatusIntoDB = async (
@@ -99,7 +110,7 @@ const getMyRequestFromDB = async (tenantId: string) => {
 };
 
 export const rentalRequestService = {
-  createRentalRequestFromDB,
+  createRentalRequestIntoDB,
   updateRentalRequestStatusIntoDB,
   getAllRentalRequestFromDB,
   getMyRenalRequestFromDB,
