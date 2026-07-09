@@ -1,6 +1,8 @@
+import Stripe from "stripe";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import { stripe } from "../../lib/stripe";
+import { handleFulfillPayment } from "./payment.utils";
 
 const createPaymentUrlForStripe = async (
   rentalRequestId: string,
@@ -14,6 +16,12 @@ const createPaymentUrlForStripe = async (
       },
     });
 
+    const rentalRequest = await tx.rentalRequest.findUniqueOrThrow({
+      where: {
+        id: rentalRequestId,
+      },
+    });
+
     const totalAmount = Math.round(payment.amount.toNumber() * 100);
 
     const session = await stripe.checkout.sessions.create({
@@ -22,7 +30,10 @@ const createPaymentUrlForStripe = async (
           price_data: {
             currency: "bdt",
             unit_amount: totalAmount,
-            product_data: { name: "Pay for your property" },
+            product_data: {
+              name: "Pay for your property",
+              description: `Rental period: starts from ${rentalRequest.moveInDate} and ends in after ${rentalRequest.durationMonths} month.`,
+            },
           },
           quantity: 1,
         },
@@ -35,6 +46,7 @@ const createPaymentUrlForStripe = async (
         tenantId,
         paymentId: payment.id,
         rentalRequestId,
+        propertyId: rentalRequest.propertyId,
       },
     });
 
@@ -46,6 +58,31 @@ const createPaymentUrlForStripe = async (
   };
 };
 
+const handleWebhook = async (payload: Buffer, signature: string) => {
+  const endpointSecret = config.stripe_webhook_secret;
+  const event = stripe.webhooks.constructEvent(
+    payload,
+    signature,
+    endpointSecret,
+  );
+
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      console.log(session);
+      if (session.payment_status === "paid") {
+        await handleFulfillPayment(session);
+      }
+      break;
+    }
+
+    default:
+      console.log(`Unhandled event type ${event.type}.`);
+      break;
+  }
+};
+
 export const paymentService = {
   createPaymentUrlForStripe,
+  handleWebhook,
 };
