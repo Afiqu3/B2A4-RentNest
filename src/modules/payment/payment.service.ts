@@ -81,7 +81,10 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
   }
 };
 
+const getPaymentHistory = async (tenantId: string) => {};
+
 export const paymentService = {
   createPaymentUrlForStripe,
   handleWebhook,
+  getPaymentHistory,
 };
