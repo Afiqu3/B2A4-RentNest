@@ -69,7 +69,6 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log(session);
       if (session.payment_status === "paid") {
         await handleFulfillPayment(session);
       }
