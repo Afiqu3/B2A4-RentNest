@@ -15,6 +15,7 @@ model Property {
     categoryId     String
     category       Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
     rentalRequests RentalRequest[]
+    reviews        Review[]
     createdAt      DateTime        @default(now())
     updatedAt      DateTime        @updatedAt
 
