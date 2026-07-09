@@ -9,7 +9,7 @@ const createPaymentUrlForStripe = async (
   tenantId: string,
 ) => {
   const transactionResult = await prisma.$transaction(async (tx) => {
-    const payment = await tx.payment.findUniqueOrThrow({
+    const payment = await tx.payment.findFirstOrThrow({
       where: {
         rentalRequestId,
         tenantId,

@@ -35,6 +35,10 @@ const updatePropertyIntoDB = async (
     throw new Error("You are not the owner of this property!");
   }
 
+  if (property.deletedAt !== null) {
+    throw new Error("Cannot update a deleted property!");
+  }
+
   const result = await prisma.property.update({
     where: {
       id: propertyId,
@@ -61,17 +65,22 @@ const deletePropertyFromDB = async (propertyId: string, landlordId: string) => {
     throw new Error("You are not the owner of this property!");
   }
 
-  await prisma.property.delete({
+  await prisma.property.update({
     where: {
       id: propertyId,
+    },
+    data: {
+      deletedAt: new Date(),
+      status: "UNAVAILABLE",
     },
   });
 };
 
 const getPropertyByIdFromDB = async (propertyId: string) => {
-  const result = await prisma.property.findUniqueOrThrow({
+  const result = await prisma.property.findFirstOrThrow({
     where: {
       id: propertyId,
+      deletedAt: null,
     },
     include: {
       category: {
@@ -99,6 +108,7 @@ const getAllMyPropertyFromDB = async (landlordId: string) => {
   const result = await prisma.property.findMany({
     where: {
       landlordId,
+      deletedAt: null,
     },
     include: {
       category: {
@@ -134,8 +144,10 @@ const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {
   const amenitiesArray = Array.isArray(amenities) ? amenities : [];
 
   const andConditions: PropertyWhereInput[] = [];
+
   andConditions.push({
     status: "AVAILABLE",
+    deletedAt: null,
   });
 
   if (query.searchTerm) {

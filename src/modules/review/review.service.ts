@@ -7,7 +7,7 @@ const createReviewIntoDB = async (
   payload: IReview,
 ) => {
   const transactionResult = await prisma.$transaction(async (tx) => {
-    const rentalRequest = await tx.rentalRequest.findUniqueOrThrow({
+    const rentalRequest = await tx.rentalRequest.findFirstOrThrow({
       where: {
         id: rentalRequestId,
         tenantId,
