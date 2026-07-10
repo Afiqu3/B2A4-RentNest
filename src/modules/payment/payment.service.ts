@@ -22,7 +22,9 @@ const createPaymentUrlForStripe = async (
       },
     });
 
-    const totalAmount = Math.round(payment.amount.toNumber() * 100);
+    const totalAmount =
+      Math.round(payment.amount.toNumber() * 100) *
+      rentalRequest.durationMonths;
 
     const session = await stripe.checkout.sessions.create({
       line_items: [
