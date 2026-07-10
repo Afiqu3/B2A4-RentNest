@@ -2,6 +2,7 @@ import "dotenv/config";
 import app from "./app";
 import config from "./config";
 import { prisma } from "./lib/prisma";
+import { startScheduledJobs } from "./lib/scheduler";
 
 const PORT = config.port;
 
@@ -11,7 +12,8 @@ async function main() {
         console.log("Connected to the database successfully.");
        app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
-       }) 
+       })
+       startScheduledJobs();
     } catch (error) {
         console.error("Error starting the server:", error);
         await prisma.$disconnect();

@@ -16,10 +16,16 @@ const createRentalRequestIntoDB = async (
       },
     });
 
+    const moveInDate = new Date(payload.moveInDate);
+    const durationMonths = payload.durationMonths ?? 1;
+    const endDate = new Date(moveInDate);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+
     const result = await tx.rentalRequest.create({
       data: {
-        moveInDate: new Date(payload.moveInDate),
-        durationMonths: payload.durationMonths,
+        moveInDate,
+        durationMonths,
+        endDate,
         propertyId,
         tenantId,
       },
@@ -109,10 +115,61 @@ const getMyRequestFromDB = async (tenantId: string) => {
   return result;
 };
 
+const expireOverdueRentals = async () => {
+  const now = new Date();
+
+  const overdue = await prisma.rentalRequest.findMany({
+    where: {
+      status: "ACTIVE",
+      endDate: {
+        not: null,
+        lt: now,
+      },
+    },
+    select: {
+      id: true,
+      propertyId: true,
+    },
+  });
+
+  let completed = 0;
+
+  for (const rental of overdue) {
+    await prisma.$transaction(async (tx) => {
+      await tx.rentalRequest.update({
+        where: {
+          id: rental.id,
+        },
+        data: {
+          status: "COMPLETED",
+        },
+      });
+
+      await tx.property.updateMany({
+        where: {
+          id: rental.propertyId,
+          status: "RENTED",
+        },
+        data: {
+          status: "AVAILABLE",
+        },
+      });
+    });
+
+    completed += 1;
+  }
+
+  return {
+    scanned: overdue.length,
+    completed,
+  };
+};
+
 export const rentalRequestService = {
   createRentalRequestIntoDB,
   updateRentalRequestStatusIntoDB,
   getAllRentalRequestFromDB,
   getMyRenalRequestFromDB,
   getMyRequestFromDB,
+  expireOverdueRentals,
 };

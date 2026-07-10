@@ -3,6 +3,7 @@ model RentalRequest {
     status         RentalRequestStatus @default(PENDING)
     moveInDate     DateTime
     durationMonths Int                 @default(1)
+    endDate        DateTime?
     tenantId       String
     tenant         User                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     propertyId     String
@@ -13,5 +14,6 @@ model RentalRequest {
     review         Review?
 
     @@unique([tenantId, propertyId, status])
+    @@index([status, endDate])
     @@map("rental_requests")
 }
