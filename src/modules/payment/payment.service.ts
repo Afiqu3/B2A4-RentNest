@@ -22,6 +22,16 @@ const createPaymentUrlForStripe = async (
       },
     });
 
+    const property = await tx.property.findUniqueOrThrow({
+      where: {
+        id: rentalRequest.propertyId,
+      },
+    });
+
+    if (property.status !== "AVAILABLE") {
+      throw new Error("This property is no longer available for rent.");
+    }
+
     const totalAmount =
       Math.round(payment.amount.toNumber() * 100) *
       rentalRequest.durationMonths;
