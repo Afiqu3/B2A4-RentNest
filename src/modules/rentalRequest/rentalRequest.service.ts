@@ -16,6 +16,20 @@ const createRentalRequestIntoDB = async (
       },
     });
 
+    const existingOpen = await tx.rentalRequest.findFirst({
+      where: {
+        tenantId,
+        propertyId,
+        status: { in: ["PENDING", "APPROVED", "ACTIVE"] },
+      },
+    });
+
+    if (existingOpen) {
+      throw new Error(
+        "You already have an active request for this property.",
+      );
+    }
+
     const moveInDate = new Date(payload.moveInDate);
     const durationMonths = payload.durationMonths ?? 1;
     const endDate = new Date(moveInDate);

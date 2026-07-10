@@ -13,7 +13,12 @@ model RentalRequest {
     payment        Payment?
     review         Review?
 
-    @@unique([tenantId, propertyId, status])
+    // A partial unique index (one OPEN request — PENDING/APPROVED/ACTIVE —
+    // per tenant+property) is defined in migration
+    // 20260710130000_rental_open_request_unique. Prisma cannot represent a
+    // partial (WHERE-filtered) unique index in the schema, so it lives at the
+    // DB level. Terminal states (REJECTED/COMPLETED) are intentionally allowed
+    // to repeat, so repeat rentals and repeat rejections work.
     @@index([status, endDate])
     @@map("rental_requests")
 }
