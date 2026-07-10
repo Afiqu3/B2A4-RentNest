@@ -88,7 +88,7 @@ export const globalErrorHandler = (
     statusCode = httpStatus.BAD_REQUEST;
     message = "Validation failed.";
 
-    errors = err.errors.map((e: any) => ({
+    errors = err.issues.map((e: any) => ({
       path: e.path.join("."),
       message: e.message,
     }));
@@ -110,6 +110,7 @@ export const globalErrorHandler = (
     statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
     name: errorName,
     message: message,
+    errors,
     error: err.stack,
   });
 };
