@@ -32,6 +32,11 @@ const createRentalRequestIntoDB = async (
 
     const moveInDate = new Date(payload.moveInDate);
     const durationMonths = payload.durationMonths ?? 1;
+
+    if (!Number.isInteger(durationMonths) || durationMonths < 1) {
+      throw new Error("durationMonths must be a whole number of at least 1.");
+    }
+
     const endDate = new Date(moveInDate);
     endDate.setMonth(endDate.getMonth() + durationMonths);
 
