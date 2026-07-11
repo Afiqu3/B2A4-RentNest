@@ -25,9 +25,7 @@ const createRentalRequestIntoDB = async (
     });
 
     if (existingOpen) {
-      throw new Error(
-        "You already have an active request for this property.",
-      );
+      throw new Error("You already have an active request for this property.");
     }
 
     const moveInDate = new Date(payload.moveInDate);
@@ -79,6 +77,10 @@ const updateRentalRequestStatusIntoDB = async (
 
   if (request.property.landlordId !== landlordId) {
     throw new Error("You are not allowed to update this request");
+  }
+
+  if (payload.status !== "APPROVED" && payload.status !== "REJECTED") {
+    throw new Error("Invalid status update. Must be APPROVED or REJECTED.");
   }
 
   const result = await prisma.rentalRequest.update({

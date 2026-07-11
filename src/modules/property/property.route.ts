@@ -2,6 +2,11 @@ import { Router } from "express";
 import { propertyController } from "./property.controller";
 import { auth } from "../../middlewares/auth";
 import { Role } from "../../../generated/prisma/enums";
+import { validateRequest } from "../../middlewares/validateRequest";
+import {
+  createPropertySchema,
+  updatePropertySchema,
+} from "./property.validation";
 
 const router = Router();
 
@@ -13,12 +18,18 @@ router.get(
 );
 router.get("/available", propertyController.getAllAvailableProperty);
 
-router.post("/", auth(Role.LANDLORD), propertyController.createProperty);
+router.post(
+  "/",
+  auth(Role.LANDLORD),
+  validateRequest(createPropertySchema),
+  propertyController.createProperty,
+);
 
 router.get("/:propertyId", propertyController.getPropertyById);
 router.patch(
   "/:propertyId",
   auth(Role.LANDLORD),
+  validateRequest(updatePropertySchema),
   propertyController.updateProperty,
 );
 router.delete(

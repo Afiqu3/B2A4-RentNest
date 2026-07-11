@@ -1,19 +1,10 @@
-import { Role } from "../../../generated/prisma/enums";
+import { z } from "zod";
+import {
+  loginUserSchema,
+  registerUserSchema,
+  updateProfileSchema,
+} from "./auth.validation";
 
-export interface IRegisterUserPayload {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-  role?: Role;
-}
-
-export interface ILoginUser {
-  email: string;
-  password: string;
-}
-
-export interface IUserUpdatedPayload {
-  name?: string;
-  phone?: string;
-}
+export type IRegisterUserPayload = z.infer<typeof registerUserSchema>;
+export type ILoginUser = z.infer<typeof loginUserSchema>;
+export type IUserUpdatedPayload = z.infer<typeof updateProfileSchema>;

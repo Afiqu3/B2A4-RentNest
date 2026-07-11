@@ -1,33 +1,13 @@
+import { z } from "zod";
 import { PropertyStatus } from "../../../generated/prisma/enums";
 import { PropertyWhereInput } from "../../../generated/prisma/models";
+import {
+  createPropertySchema,
+  updatePropertySchema,
+} from "./property.validation";
 
-export interface IProperty {
-  title: string;
-  description: string;
-  location: string;
-  address: string;
-  rentAmount: number;
-  bedrooms: number;
-  bathrooms: number;
-  areaSquareFt?: number;
-  amenities: string[];
-  status?: PropertyStatus;
-  categoryId: string;
-}
-
-export interface IPropertyUpdate {
-  title?: string;
-  description?: string;
-  location?: string;
-  address?: string;
-  rentAmount?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  areaSquareFt?: number;
-  amenities?: string[];
-  status?: PropertyStatus;
-  categoryId?: string;
-}
+export type IProperty = z.infer<typeof createPropertySchema>;
+export type IPropertyUpdate = z.infer<typeof updatePropertySchema>;
 
 export interface IPropertyQuery extends PropertyWhereInput {
   searchTerm?: string;

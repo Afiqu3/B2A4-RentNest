@@ -75,6 +75,29 @@ const refreshToken = catchAsync(
   },
 );
 
+const logout = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+    });
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Logged out successfully",
+      data: null,
+    });
+  },
+);
+
 const getMyProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const profile = await authService.getMyProfileFromDB(
@@ -85,7 +108,7 @@ const getMyProfile = catchAsync(
       success: true,
       statusCode: httpStatus.OK,
       message: "User profile fetched successfully",
-      data: profile ,
+      data: profile,
     });
   },
 );
@@ -105,7 +128,7 @@ const updateProfile = catchAsync(
       success: true,
       statusCode: httpStatus.OK,
       message: "User profile updated successfully",
-      data: updatedProfile ,
+      data: updatedProfile,
     });
   },
 );
@@ -147,6 +170,7 @@ export const authController = {
   registerUser,
   loginUser,
   refreshToken,
+  logout,
   getMyProfile,
   updateProfile,
   getAllUser,
