@@ -5,8 +5,10 @@
   "main": "server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsup",
+    "build": "prisma generate && tsup",
     "start": "node dist/server.js",
+    "seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate",
     "stripe": "stripe listen --forward-to http://localhost:5000/api/payments/confirm",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -39,6 +41,7 @@
     "node-cron": "^3.0.3",
     "pg": "^8.22.0",
     "stripe": "^22.3.0",
+    "tsup": "^8.5.1",
     "zod": "^4.4.3"
   }
 }

@@ -4,6 +4,12 @@ Backend REST API for a property-rental platform connecting **tenants**, **landlo
 
 Built with Express 5 + TypeScript, PostgreSQL via Prisma, JWT auth, and Stripe payments.
 
+## Live API
+
+- Production base URL: https://rent-nest-eta.vercel.app/
+- Health check endpoint: GET /
+- Use this URL for deployed API testing and integration.
+
 ---
 
 ## Tech stack
@@ -74,6 +80,8 @@ JWT_REFRESH_EXPIRES_IN=7d
 STRIPE_SECRET_KEY=sk_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 ```
+
+> For production, set `APP_URL` to the deployed frontend or API origin such as https://rent-nest-eta.vercel.app/.
 
 ### Database
 
@@ -148,7 +156,7 @@ Integrity guarantees enforced at the DB level: at most one *open* rental request
 
 ## API reference
 
-Base URL: `http://localhost:<PORT>`
+Base URL: `http://localhost:<PORT>` or `https://rent-nest-eta.vercel.app/`
 All routes are prefixed as shown. **Auth** column = required role(s); "Public" = no token needed.
 
 ### Auth — `/api/auth`
@@ -158,6 +166,7 @@ All routes are prefixed as shown. **Auth** column = required role(s); "Public" =
 | POST | `/register` | Public | `{ name, email, password, phone, role? }` | Register a user (returns user without password). |
 | POST | `/login` | Public | `{ email, password }` | Log in; sets `accessToken`/`refreshToken` cookies and returns both tokens. |
 | POST | `/refresh-token` | Public (uses `refreshToken` cookie) | — | Issue a new access token. |
+| POST | `/logout` | TENANT, LANDLORD, ADMIN | — | Clear authentication cookies. |
 | GET | `/me` | TENANT, LANDLORD, ADMIN | — | Current user's profile. |
 | PATCH | `/my-profile` | TENANT, LANDLORD, ADMIN | `{ name?, phone? }` | Update own name/phone. |
 | GET | `/users` | ADMIN | — | List all landlords and tenants. |
@@ -202,6 +211,7 @@ All routes are prefixed as shown. **Auth** column = required role(s); "Public" =
 |---|---|---|---|
 | POST | `/checkout/:rentalRequestId` | TENANT | Create a Stripe Checkout session; returns the payment URL. Total = monthly rent × `durationMonths`. Rejected if the property is no longer available. |
 | POST | `/confirm` | Stripe (webhook) | Stripe webhook endpoint. Expects the raw body and a `stripe-signature` header. On `checkout.session.completed`, fulfills the payment and activates the rental. |
+| GET | `/history` | TENANT | Retrieve the authenticated tenant's payment history. |
 
 ### Reviews — `/api/reviews`
 
@@ -221,13 +231,5 @@ All routes are prefixed as shown. **Auth** column = required role(s); "Public" =
 
 A daily cron job (00:05, `src/lib/scheduler.ts`) runs `expireOverdueRentals`: it finds `ACTIVE` rentals whose `endDate` has passed, marks them `COMPLETED`, and frees their properties to `AVAILABLE`. It is transactional and idempotent.
 
-> If deploying to a serverless platform (e.g. Vercel), node-cron will not run — use the platform's scheduler to call an equivalent endpoint instead.
+> Vercel does not support long-running node-cron jobs in serverless functions. This project now exposes a scheduled endpoint at `/api/cron/expire-rentals` that Vercel Cron can call. Set `CRON_SECRET` in Vercel Environment Variables and configure the cron job in Vercel Dashboard or in `vercel.json`.
 
----
-
-## Notes & limitations
-
-- `Payment.amount` stores the **monthly** rent; the multi-month total is computed at checkout time.
-- The double-booking guard flags a lost-race payment for refund (logs it) but does not yet auto-refund via Stripe.
-- `getPaymentHistory` is implemented in the payment service/controller but is not currently wired to a route.
-- `error: err.stack` is returned in error responses — gate this behind a non-production check before deploying.
